@@ -61,7 +61,7 @@ pub struct CasterComponent {
     pub spells: Vec<spell::Spell>
 }
 
-struct HumanoidComponent {
+pub struct HumanoidComponent {
     pub left_hand: Option<item::Equipment>,
     pub right_hand: Option<item::Equipment>,
 
