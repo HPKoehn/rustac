@@ -4,3 +4,4 @@ mod status;
 mod item;
 mod class;
 mod spell;
+mod direction;

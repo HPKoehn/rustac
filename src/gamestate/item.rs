@@ -1,4 +1,6 @@
-pub struct ItemEntry {
+pub type ItemId = i32;
+
+pub struct Item {
     pub item: ItemType,
     pub amount: i32
 }
