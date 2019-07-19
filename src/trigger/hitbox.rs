@@ -1,12 +1,14 @@
 use crate::trigger::trigger;
 use std::ops::Range;
 
+#[derive(Eq, PartialEq, Clone, Debug)]
 pub enum HitboxType {
     Wall,
     Player,
     Transparent
 }
 
+#[derive(Debug)]
 pub struct Hitbox {
     pub xl: i32,
     pub xr: i32,
