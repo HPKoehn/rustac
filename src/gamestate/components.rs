@@ -5,7 +5,8 @@ use crate::gamestate::{
     item,
     class,
     spell,
-    direction
+    direction,
+    dungeon
 };
 
 use crate::trigger::{
@@ -91,6 +92,11 @@ pub struct NpcBehaviorComponent {
 pub struct ItemDropComponent {
     pub gold: i32,
     pub item: Option<item::ItemId>
+}
+
+// shows belonging to a room
+pub struct DungeonComponent {
+    pub type_: dungeon::DungeonElement
 }
 
 #[derive(Debug)]

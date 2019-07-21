@@ -9,7 +9,7 @@ pub type EntityMap<T> = allocation::GenerationalIndexArray<T>;
 pub struct ECS {
     pub allocator: allocation::GenerationalIndexAllocator,
 
-    pub health_components: EntityMap<HealthComponent>,
+    pub health_component: EntityMap<HealthComponent>,
     pub basestats_component: EntityMap<BaseStatsComponent>,
     pub status_component: EntityMap<StatusComponent>,
     pub inventory_component: EntityMap<InventoryComponent>,
@@ -20,6 +20,7 @@ pub struct ECS {
     pub humanoid_component: EntityMap<HumanoidComponent>,
     pub npc_behavior_component: EntityMap<NpcBehaviorComponent>,
     pub item_drop_component: EntityMap<ItemDropComponent>,
+    pub dungeon_component: EntityMap<DungeonComponent>,
     pub player_component: EntityMap<PlayerComponent>,
     pub render_component: EntityMap<RenderComponent>
 }
@@ -29,7 +30,7 @@ impl ECS {
         ECS {
             allocator: allocation::GenerationalIndexAllocator::new(),
 
-            health_components: EntityMap::new(),
+            health_component: EntityMap::new(),
             basestats_component: EntityMap::new(),
             status_component: EntityMap::new(),
             inventory_component: EntityMap::new(),
@@ -40,6 +41,7 @@ impl ECS {
             humanoid_component: EntityMap::new(),
             npc_behavior_component: EntityMap::new(),
             item_drop_component: EntityMap::new(),
+            dungeon_component: EntityMap::new(),
             player_component: EntityMap::new(),
             render_component: EntityMap::new(),
         }

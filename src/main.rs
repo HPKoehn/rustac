@@ -1,6 +1,7 @@
 mod gamestate;
 mod trigger;
 mod render;
+mod builder;
 mod ecs;
 
 fn main() {
@@ -8,10 +9,10 @@ fn main() {
     let mut my_ecs = crate::ecs::ECS::new();
 
     let entity = my_ecs.allocator.allocate();
-    print!("{:?}", my_ecs.health_components.get(entity));
-    my_ecs.health_components.set(entity, crate::gamestate::components::HealthComponent {
+    print!("{:?}", my_ecs.health_component.get(entity));
+    my_ecs.health_component.set(entity, crate::gamestate::components::HealthComponent {
         current: 100,
         maximum: 100
     });
-    print!("{:?}", my_ecs.health_components.get(entity));
+    print!("{:?}", my_ecs.health_component.get(entity));
 }

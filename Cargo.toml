@@ -8,4 +8,6 @@ edition = "2018"
 
 [dependencies]
 
+piston = "0.49.0"
+
 recs = { git = "https://github.com/HPKoehn/recs/" }

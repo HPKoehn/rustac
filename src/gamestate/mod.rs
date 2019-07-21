@@ -5,3 +5,4 @@ pub mod item;
 pub mod class;
 pub mod spell;
 pub mod direction;
+pub mod dungeon;

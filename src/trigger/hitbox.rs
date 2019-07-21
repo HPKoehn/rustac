@@ -8,6 +8,13 @@ pub enum HitboxType {
     Transparent
 }
 
+
+//     2      |       yl
+//     1      |       ^
+// 2 1 0 1 2  |  xl < x > xr
+//     1      |       v
+//     2      |       yr
+
 #[derive(Debug)]
 pub struct Hitbox {
     pub xl: i32,
@@ -15,8 +22,8 @@ pub struct Hitbox {
     pub yl: i32,
     pub yr: i32,
 
-    type_: HitboxType,
-    trigger: Option<trigger::Trigger>
+    pub type_: HitboxType,
+    pub trigger: Option<trigger::Trigger>
 }
 
 impl Hitbox {
@@ -34,3 +41,11 @@ impl Hitbox {
         }
     }
 }
+
+pub fn passive_wall_hitbox() -> Hitbox {
+        Hitbox {
+            xl: 0, xr: 0, yl: 0, yr: 0,
+            type_: HitboxType::Wall,
+            trigger: None
+        }
+    }
