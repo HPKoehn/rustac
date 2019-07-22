@@ -1,1 +1,1 @@
-mod dungeon;
+pub mod dungeon;

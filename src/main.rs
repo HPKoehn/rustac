@@ -4,15 +4,59 @@ mod render;
 mod builder;
 mod ecs;
 
-fn main() {
-    println!("Hello, world!");
-    let mut my_ecs = crate::ecs::ECS::new();
+extern crate piston;
+extern crate graphics;
+extern crate glutin_window;
+extern crate opengl_graphics;
 
-    let entity = my_ecs.allocator.allocate();
-    print!("{:?}", my_ecs.health_component.get(entity));
-    my_ecs.health_component.set(entity, crate::gamestate::components::HealthComponent {
-        current: 100,
-        maximum: 100
-    });
-    print!("{:?}", my_ecs.health_component.get(entity));
+use piston::window::WindowSettings;
+use glutin_window::GlutinWindow as Window;
+use opengl_graphics::{GlGraphics, OpenGL};
+use piston::event_loop::*;
+use piston::input::*;
+
+use crate::render::{render_game, sprite, RenderConfig};
+
+fn main() {
+
+    // setup of main data structures
+    let mut ecs_ = ecs::ECS::new();
+    let render_conf = RenderConfig {
+        scale: 100,
+        window_xs: 1000,
+        window_ys: 1000
+    };
+    
+    // setup of opengl window
+    let opengl  = OpenGL::V3_2;
+	let mut window: Window = WindowSettings::new(
+            "spinning-square",
+            [render_conf.window_xs, render_conf.window_ys]
+        )
+        .graphics_api(opengl)
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
+        
+	let mut gl  = GlGraphics::new(opengl);
+    let sprite_textures = sprite::setup_sprite_textures();
+	
+    // BEGIN test code
+
+    use crate::builder::dungeon;
+    dungeon::create_floor_tile(&mut ecs_, 0, 0);
+    dungeon::create_floor_tile(&mut ecs_, 2, 0);
+    dungeon::create_floor_tile(&mut ecs_, 0, 1);
+    dungeon::create_floor_tile(&mut ecs_, 1, 1);
+
+    // END test code
+
+	//Main loop
+
+    let mut events = Events::new(EventSettings::new());
+    while let Some(e) = events.next(&mut window) {
+        if let Some(r) = e.render_args() {
+            render_game(&mut gl, &r, &mut ecs_, &sprite_textures, &render_conf);
+        }
+	}
 }

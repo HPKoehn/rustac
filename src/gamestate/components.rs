@@ -111,6 +111,7 @@ pub struct PlayerComponent {
 #[derive(Debug)]
 pub struct RenderComponent {
     pub base_sprite: sprite::SpriteId, // change to ressource entity?
+    pub base_sprite_size: u32,
     pub animation: Option<animation::AnimationState>,
     pub visible: bool,
     pub render_layer: i32

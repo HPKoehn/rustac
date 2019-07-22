@@ -14,7 +14,7 @@ pub fn tear_down_level(ecs_: &mut ecs::ECS) {
     }
 }
 
-fn create_floor_tile(ecs_: &mut ecs::ECS, x: i32, y: i32) -> ecs::Entity {
+pub fn create_floor_tile(ecs_: &mut ecs::ECS, x: i32, y: i32) -> ecs::Entity {
     let entity = ecs_.allocator.allocate();
     ecs_.dungeon_component.set(entity, components::DungeonComponent {
         type_: dungeon::DungeonElement::Floor
@@ -25,10 +25,17 @@ fn create_floor_tile(ecs_: &mut ecs::ECS, x: i32, y: i32) -> ecs::Entity {
         direction: direction::Direction::Down,
         hitbox: None
     });
+    ecs_.render_component.set(entity, components::RenderComponent {
+        base_sprite: "default",
+        base_sprite_size: 1,
+        animation: None,
+        visible: true,
+        render_layer: 0
+    });
     entity
 }
 
-fn create_wall_tile(ecs_: &mut ecs::ECS, x: i32, y: i32) -> ecs::Entity {
+pub fn create_wall_tile(ecs_: &mut ecs::ECS, x: i32, y: i32) -> ecs::Entity {
     let entity = ecs_.allocator.allocate();
     ecs_.dungeon_component.set(entity, components::DungeonComponent {
         type_: dungeon::DungeonElement::Wall
