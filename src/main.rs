@@ -17,6 +17,8 @@ use piston::input::*;
 
 use crate::render::{render_game, sprite, RenderConfig};
 
+const UPDATES_PER_SECOND: u64 = 30;
+
 fn main() {
 
     // setup of main data structures
@@ -30,7 +32,7 @@ fn main() {
     // setup of opengl window
     let opengl  = OpenGL::V3_2;
 	let mut window: Window = WindowSettings::new(
-            "spinning-square",
+            "rustac",
             [render_conf.window_xs, render_conf.window_ys]
         )
         .graphics_api(opengl)
@@ -54,6 +56,7 @@ fn main() {
 	//Main loop
 
     let mut events = Events::new(EventSettings::new());
+    events.set_ups(UPDATES_PER_SECOND);
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
             render_game(&mut gl, &r, &mut ecs_, &sprite_textures, &render_conf);

@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use crate::gamestate::{
+    actor,
     status,
     item,
     class,
     spell,
     direction,
     dungeon,
-    duration
 };
 
 use crate::trigger::{
@@ -34,13 +34,10 @@ pub struct BaseStatsComponent {
 }
 
 
-// blocks input/actions for that entity with this component
-// (e.g. during move action no now inputs?) 
-// will be removed when duration is over
-// rendering will still be dones
 #[derive(Debug)]
-pub struct BlockedComponent {
-    pub duration_left: duration::Duration
+pub struct ActorComponent {
+    state: actor::ActorState,
+    turn: u64
 }
 
 #[derive(Debug)]
