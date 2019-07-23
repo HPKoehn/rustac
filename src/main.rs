@@ -22,7 +22,7 @@ fn main() {
     // setup of main data structures
     let mut ecs_ = ecs::ECS::new();
     let render_conf = RenderConfig {
-        scale: 100,
+        scale: 100.0,
         window_xs: 1000,
         window_ys: 1000
     };
@@ -44,10 +44,10 @@ fn main() {
     // BEGIN test code
 
     use crate::builder::dungeon;
-    dungeon::create_floor_tile(&mut ecs_, 0, 0);
-    dungeon::create_floor_tile(&mut ecs_, 2, 0);
-    dungeon::create_floor_tile(&mut ecs_, 0, 1);
-    dungeon::create_floor_tile(&mut ecs_, 1, 1);
+    dungeon::create_floor_tile(&mut ecs_, 0.0, 0.0);
+    dungeon::create_floor_tile(&mut ecs_, 2.0, 0.0);
+    dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
+    dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
 
     // END test code
 

@@ -14,7 +14,7 @@ use crate::ecs;
 
 pub struct RenderConfig {
     // determines the ratio between pixels and ingame units
-    pub scale: u32,
+    pub scale: f64,
     pub window_xs: u32,
     pub window_ys: u32
 }
@@ -37,10 +37,10 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                 // find the place to render the sprite
                 if let Some(location) = ecs_.location_component.get(entity) {
                     // we got a location so we will do some math
-                    let x = location.x * conf.scale as i32;
-                    let y = location.y * conf.scale as i32;
+                    let x = location.x * conf.scale;
+                    let y = location.y * conf.scale;
                     let size = conf.scale * r_comp.base_sprite_size;
-                    let image = Image::new().rect(square(x as f64, y as f64, size as f64));
+                    let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {
                         image.draw(texture, &DrawState::default(), c.transform, gl);
                     });

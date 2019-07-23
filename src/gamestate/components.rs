@@ -6,7 +6,8 @@ use crate::gamestate::{
     class,
     spell,
     direction,
-    dungeon
+    dungeon,
+    duration
 };
 
 use crate::trigger::{
@@ -32,6 +33,16 @@ pub struct BaseStatsComponent {
     pub resistence: i32
 }
 
+
+// blocks input/actions for that entity with this component
+// (e.g. during move action no now inputs?) 
+// will be removed when duration is over
+// rendering will still be dones
+#[derive(Debug)]
+pub struct BlockedComponent {
+    pub duration_left: duration::Duration
+}
+
 #[derive(Debug)]
 pub struct StatusComponent {
     pub status: Vec<status::Status>
@@ -45,8 +56,8 @@ pub struct InventoryComponent {
 
 #[derive(Debug)]
 pub struct LocationComponent {
-    pub x: i32,
-    pub y: i32,
+    pub x: f64,
+    pub y: f64,
     pub direction: direction::Direction,
     pub hitbox: Option<hitbox::Hitbox>
 }
@@ -111,7 +122,7 @@ pub struct PlayerComponent {
 #[derive(Debug)]
 pub struct RenderComponent {
     pub base_sprite: sprite::SpriteId, // change to ressource entity?
-    pub base_sprite_size: u32,
+    pub base_sprite_size: f64,
     pub animation: Option<animation::AnimationState>,
     pub visible: bool,
     pub render_layer: i32
