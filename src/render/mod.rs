@@ -12,8 +12,6 @@ use graphics::rectangle::square;
 
 use crate::ecs;
 
-
-
 pub struct RenderConfig {
     // determines the ratio between pixels and ingame units
     pub scale: f64,
@@ -25,7 +23,7 @@ pub struct RenderConfig {
 
 pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, tex: &sprite::SpriteTextures, conf: &RenderConfig) {
     //TODO dont ignore render layers
-    
+
     // clear screen
     clear([0.0, 0.0, 0.0, 1.0], gl);
 
@@ -51,6 +49,7 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
             if !r_comp.visible {
                 continue;
             }
+            // we need a location to render the entity
             if let Some(location) = ecs_.location_component.get(entity) {
                 // check if entity is within cameras vision
                 if !(x_camera_position - half_window_x <= location.x && location.x <= x_camera_position + half_window_x) {
