@@ -24,9 +24,10 @@ fn main() {
     // setup of main data structures
     let mut ecs_ = ecs::ECS::new();
     let render_conf = RenderConfig {
-        scale: 100.0,
-        window_xs: 1000,
-        window_ys: 1000
+        scale: 42.0,
+        window_xs: 800,
+        window_ys: 800,
+        focused_entity: None
     };
     
     // setup of opengl window
