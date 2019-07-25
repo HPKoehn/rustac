@@ -23,7 +23,7 @@ fn main() {
 
     // setup of main data structures
     let mut ecs_ = ecs::ECS::new();
-    let render_conf = RenderConfig {
+    let mut render_conf = RenderConfig {
         scale: 42.0,
         window_xs: 800,
         window_ys: 800,
@@ -47,10 +47,12 @@ fn main() {
     // BEGIN test code
 
     use crate::builder::dungeon;
-    dungeon::create_floor_tile(&mut ecs_, 0.0, 0.0);
+    let ent = dungeon::create_floor_tile(&mut ecs_, 0.0, 0.0);
     dungeon::create_floor_tile(&mut ecs_, 2.0, 0.0);
     dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
     dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
+
+    //render_conf.focused_entity = Some(ent);
 
     // END test code
 

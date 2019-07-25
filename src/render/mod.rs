@@ -23,6 +23,7 @@ pub struct RenderConfig {
 
 pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, tex: &sprite::SpriteTextures, conf: &RenderConfig) {
     //TODO dont ignore render layers
+    //TODO still buggy, fix camera
 
     // clear screen
     clear([0.0, 0.0, 0.0, 1.0], gl);
@@ -32,8 +33,8 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
     let half_window_y = (conf.window_ys as f64 / 2.0) / conf.scale;
 
     // offset for focused entity (camera) (default middle of screen)
-    let mut x_camera_position = half_window_x;
-    let mut y_camera_position = half_window_y;
+    let mut x_camera_position = 1.0;
+    let mut y_camera_position = 1.0;
 
     if let Some(focused_entity) = conf.focused_entity {
         if let Some(location) = ecs_.location_component.get(focused_entity) {
@@ -41,6 +42,9 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
             y_camera_position = location.y;
         }
     }
+
+    let x_offset = x_camera_position - half_window_x;
+    let y_offset = y_camera_position - half_window_y;
 
     // iterate over all entities
     for entity in ecs_.allocator.live_indices() {
@@ -62,8 +66,8 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                 // check if texture actually exists
                 if let Some(texture) = tex.get(r_comp.base_sprite) {
                     // we got a location so we will do some math
-                    let x = (location.x + x_camera_position) * conf.scale - conf.scale / 2.0;
-                    let y = (location.y + y_camera_position) * conf.scale - conf.scale / 2.0;
+                    let x = (location.x - x_offset) * conf.scale - conf.scale / 2.0;
+                    let y = (location.y - y_offset) * conf.scale - conf.scale / 2.0;
                     let size = conf.scale * r_comp.base_sprite_size;
                     let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {
