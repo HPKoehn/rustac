@@ -33,18 +33,18 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
     let half_window_y = (conf.window_ys as f64 / 2.0) / conf.scale;
 
     // offset for focused entity (camera) (default middle of screen)
-    let mut x_camera_position = 1.0;
-    let mut y_camera_position = 1.0;
+    let mut focused_entity_position_x = half_window_x;
+    let mut focused_entity_position_y = half_window_y;
 
     if let Some(focused_entity) = conf.focused_entity {
         if let Some(location) = ecs_.location_component.get(focused_entity) {
-            x_camera_position = location.x;
-            y_camera_position = location.y;
+            focused_entity_position_x = location.x;
+            focused_entity_position_y = location.y;
         }
     }
 
-    let x_offset = x_camera_position - half_window_x;
-    let y_offset = y_camera_position - half_window_y;
+    let x_offset = half_window_x - focused_entity_position_x;
+    let y_offset = half_window_y - focused_entity_position_y;
 
     // iterate over all entities
     for entity in ecs_.allocator.live_indices() {
@@ -56,18 +56,18 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
             // we need a location to render the entity
             if let Some(location) = ecs_.location_component.get(entity) {
                 // check if entity is within cameras vision
-                if !(x_camera_position - half_window_x <= location.x && location.x <= x_camera_position + half_window_x) {
+                if location.x + x_offset < 0.0 || location.x + x_offset >= conf.window_xs as f64 {
                     continue;
                 }
-                if !(y_camera_position - half_window_y <= location.y && location.y <= y_camera_position + half_window_y) {
+                if location.y + y_offset < 0.0 || location.y + y_offset >= conf.window_ys as f64 {
                     continue;
                 }
 
                 // check if texture actually exists
                 if let Some(texture) = tex.get(r_comp.base_sprite) {
                     // we got a location so we will do some math
-                    let x = (location.x - x_offset) * conf.scale - conf.scale / 2.0;
-                    let y = (location.y - y_offset) * conf.scale - conf.scale / 2.0;
+                    let x = (location.x + x_offset) * conf.scale - conf.scale / 2.0;
+                    let y = (location.y + y_offset) * conf.scale - conf.scale / 2.0;
                     let size = conf.scale * r_comp.base_sprite_size;
                     let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {
