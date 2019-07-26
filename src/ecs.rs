@@ -48,6 +48,22 @@ impl ECS {
             status_component: EntityMap::new(),
         }
     }
+
+    pub fn get_entities_by_location(&self, x: f64, y: f64) -> Vec<Entity> {
+        let mut result = Vec::new();
+        for entity in self.allocator.live_indices() {
+            if let Some(location) = self.location_component.get(entity) {
+                if location.x == x && location.y == y {
+                    result.push(entity);
+                }
+            }
+        }
+        result
+    }
+
+    pub fn get_player_entity(&self) -> Option<Entity> {
+        self.allocator.live_indices().into_iter().find(|&e| self.player_component.get(e).is_some())
+    }
 }
 
 

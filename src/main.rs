@@ -1,4 +1,5 @@
 mod gamestate;
+mod gamelogic;
 mod trigger;
 mod render;
 mod builder;
@@ -48,10 +49,9 @@ fn main() {
 
     use crate::builder::dungeon;
     dungeon::create_floor_tile(&mut ecs_, 0.0, 0.0);
-    let ent = dungeon::create_floor_tile(&mut ecs_, 2.0, 0.0);
+    dungeon::create_floor_tile(&mut ecs_, 2.0, 0.0);
+    let ent = dungeon::create_floor_tile(&mut ecs_, 1.0, 0.0);
     dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
-    dungeon::create_floor_tile(&mut ecs_, 1.0, 1.0);
-
     render_conf.focused_entity = Some(ent);
 
     // END test code

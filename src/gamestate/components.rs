@@ -59,6 +59,15 @@ pub struct LocationComponent {
     pub hitbox: Option<hitbox::Hitbox>
 }
 
+impl LocationComponent {
+    pub fn apply(&mut self, dir: direction::Direction) {
+        let (tx, ty) = dir.apply(self.x, self.y);
+        self.x = tx;
+        self.y = ty;
+        self.direction = dir;
+    }
+}
+
 #[derive(Debug)]
 pub struct NameComponent {
     pub name: String
