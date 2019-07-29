@@ -1,5 +1,8 @@
+extern crate serde;
 
-#[derive(Debug, PartialEq, Eq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ActorState {
     WaitingForTurn,
     Acting,

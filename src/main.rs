@@ -28,8 +28,8 @@ fn main() {
     let mut ecs_ = ecs::ECS::new();
     let mut render_conf = RenderConfig {
         scale: 100.0,
-        window_xs: 500,
-        window_ys: 500,
+        window_xs: 1000,
+        window_ys: 1000,
         focused_entity: None
     };
     
@@ -51,20 +51,15 @@ fn main() {
 
     use crate::builder::dungeon;
 
-    //floor
-    for x in 0..6 {
-        for y in 0..6 {
-            dungeon::create_floor_tile(&mut ecs_, x as f64, y as f64);
-        }
-    }
+    dungeon::create_empty_room(&mut ecs_, 0.0, 0.0, 10, 8);
+    dungeon::create_empty_room(&mut ecs_, 0.0, 8.0, 8, 10);
+    dungeon::delete_dungeon_entities(&mut ecs_, 
+                                     gamestate::dungeon::DungeonElement::Wall,
+                                     4.0, 7.0);
+    dungeon::delete_dungeon_entities(&mut ecs_, 
+                                     gamestate::dungeon::DungeonElement::Wall,
+                                     4.0, 8.0);
 
-    // wall
-    for i in 0..6 {
-        dungeon::create_wall_tile(&mut ecs_, i as f64, 0.0);
-        dungeon::create_wall_tile(&mut ecs_, i as f64, 5.0);
-        dungeon::create_wall_tile(&mut ecs_, 0.0, i as f64);
-        dungeon::create_wall_tile(&mut ecs_, 5.0, i as f64);
-    }
     
     // player
     let player = create_test_dummy_player(&mut ecs_);
@@ -109,7 +104,7 @@ fn create_test_dummy_player(ecs_: &mut ecs::ECS) -> ecs::Entity {
     });
 
     ecs_.render_component.set(player, components::RenderComponent {
-        base_sprite: "player",
+        base_sprite: "player".to_string(),
         base_sprite_size: 1.0,
         animation: None,
         visible: true,

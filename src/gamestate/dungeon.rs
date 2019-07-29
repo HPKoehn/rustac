@@ -1,5 +1,9 @@
+extern crate serde;
 
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+use serde::{Serialize, Deserialize};
+
+
+#[derive(PartialEq, Eq, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum DungeonElement {
     Floor,
     Wall,

@@ -1,14 +1,17 @@
-use crate::trigger::trigger;
-use std::ops::Range;
+extern crate serde;
 
-#[derive(Eq, PartialEq, Clone, Debug, Ord, PartialOrd)]
+use serde::{Serialize, Deserialize};
+
+use crate::trigger::trigger;
+
+#[derive(Eq, PartialEq, Clone, Debug, Ord, PartialOrd, Serialize, Deserialize)]
 pub enum HitboxType {
     Transparent,
     Creature,
     Wall,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Hitbox {
     pub x: f64,
     pub y: f64,

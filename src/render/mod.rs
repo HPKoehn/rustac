@@ -80,7 +80,7 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                 }
 
                 // check if texture actually exists
-                if let Some(texture) = tex.get(render_c.base_sprite) {
+                if let Some(texture) = tex.get(&render_c.base_sprite) {
                     // we got a location so we will do some math
                     let x = (location_c.x + x_offset) * conf.scale - conf.scale / 2.0;
                     let y = (location_c.y + y_offset) * conf.scale - conf.scale / 2.0;

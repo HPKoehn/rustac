@@ -1,3 +1,7 @@
+extern crate serde;
+
+use serde::{Serialize, Deserialize};
+
 use std::collections::HashMap;
 
 use crate::gamestate::{
@@ -19,13 +23,13 @@ use crate::render::{
     sprite
 };
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct HealthComponent {
     pub maximum: i32,
     pub current: i32
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BaseStatsComponent {
     pub attack: i32,
     pub defense: i32,
@@ -34,24 +38,24 @@ pub struct BaseStatsComponent {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ActorComponent {
     pub state: actor::ActorState,
     pub turn: u64
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StatusComponent {
     pub status: Vec<status::Status>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InventoryComponent {
     pub items: Vec<item::Item>, //todo change to entity index
     pub capacity: i32
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct LocationComponent {
     pub x: f64,
     pub y: f64,
@@ -68,26 +72,26 @@ impl LocationComponent {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NameComponent {
     pub name: String
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ClassComponent {
     pub class: class::Class,
     pub level: i32,
     pub experience: i32
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CasterComponent {
     pub current_mana: i32,
     pub maximum_mana: i32,
     pub spells: Vec<spell::Spell>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct HumanoidComponent {
     pub left_hand: Option<item::Equipment>,
     pub right_hand: Option<item::Equipment>,
@@ -99,24 +103,25 @@ pub struct HumanoidComponent {
     pub feet: Option<item::Equipment>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NpcBehaviorComponent {
     // todo behavior for monsters etc
 }
 
 // what do entities drop if they die
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ItemDropComponent {
     pub gold: i32,
     pub item: Option<item::ItemId>
 }
 
 // shows belonging to a room
+#[derive(Debug, Serialize, Deserialize)]
 pub struct DungeonComponent {
     pub type_: dungeon::DungeonElement
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PlayerComponent {
     pub stage_level: i32,
     pub gold: i32,
@@ -125,7 +130,7 @@ pub struct PlayerComponent {
     pub progression_flags: HashMap<String, bool>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RenderComponent {
     pub base_sprite: sprite::SpriteId, // change to ressource entity?
     pub base_sprite_size: f64,
