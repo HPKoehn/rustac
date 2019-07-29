@@ -1,6 +1,6 @@
 mod gamestate;
 mod gamelogic;
-mod trigger;
+mod event;
 mod render;
 mod builder;
 mod ecs;
@@ -19,6 +19,7 @@ use piston::input::*;
 
 use render::{render_game, sprite, RenderConfig};
 use gamestate::components;
+use event::{Hitbox, HitboxType};
 
 const UPDATES_PER_SECOND: u64 = 30;
 
@@ -87,20 +88,20 @@ fn main() {
 
 fn create_test_dummy_player(ecs_: &mut ecs::ECS) -> ecs::Entity {
 
-    use crate::trigger::hitbox;
-
     let player = ecs_.allocator.allocate();
 
     ecs_.actor_component.set(player, components::ActorComponent {
         state: gamestate::actor::ActorState::WaitingForTurn,
-        turn: 0
+        turn: 0,
+        max_actions: 1,
+        performed_actions: 0
     });
 
     ecs_.location_component.set(player, components::LocationComponent {
         x: 2.0,
         y: 3.0,
         direction: gamestate::direction::Direction::Down,
-        hitbox: Some(hitbox::passive_creature_hitbox())
+        hitbox: Some(Hitbox::new_small(HitboxType::Creature))
     });
 
     ecs_.render_component.set(player, components::RenderComponent {

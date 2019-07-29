@@ -4,7 +4,7 @@ use crate::gamestate::{
     direction,
     dungeon,
 };
-use crate::trigger::hitbox;
+use crate::event::{Hitbox, HitboxType};
 
 pub fn tear_down_level(ecs_: &mut ecs::ECS) {
     for entity in ecs_.allocator.live_indices() {
@@ -44,7 +44,7 @@ pub fn create_wall_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
         x: x,
         y: y,
         direction: direction::Direction::Down,
-        hitbox: Some(hitbox::passive_wall_hitbox())
+        hitbox: Some(Hitbox::new_small(HitboxType::Wall))
     });
     ecs_.render_component.set(entity, components::RenderComponent {
         base_sprite: "wall_tile".to_string(),

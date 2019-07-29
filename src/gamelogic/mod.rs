@@ -1,25 +1,23 @@
 use crate::ecs;
-use crate::gamestate::{ actor, direction };
+use crate::gamestate::{actor, direction};
 
 
 pub enum PlayerAction {
     Interact(ecs::Entity),
     Attack(ecs::Entity),
-    Move(direction::Direction)
+    Move(direction::Direction),
 }
 
 pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -> bool {
     if let Some(player) = ecs_.get_player_entity() {
-
         match player_action {
             PlayerAction::Move(dir) => {
                 // get player position
                 if !move_entity(ecs_, player, dir) {
                     print!("Player tried to move to a location, but was denied!\n");
                 }
-
-            },
-            _ => {/*TODO Implement other actions*/}
+            }
+            _ => { /*TODO Implement other actions*/ }
         }
     }
     true
@@ -64,7 +62,7 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Dir
 
 // Force moves an entity to a location
 // returns false if entity does not exist or has no location component
-pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64)-> bool {
+pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64) -> bool {
     if let Some(location) = ecs_.location_component.get_mut(entity) {
         location.x = x;
         location.y = y;

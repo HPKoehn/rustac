@@ -14,9 +14,7 @@ use crate::gamestate::{
     dungeon,
 };
 
-use crate::trigger::{
-    hitbox
-};
+use crate::event;
 
 use crate::render::{
     animation,
@@ -41,7 +39,9 @@ pub struct BaseStatsComponent {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ActorComponent {
     pub state: actor::ActorState,
-    pub turn: u64
+    pub turn: u64,
+    pub max_actions: u64,
+    pub performed_actions : u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -60,7 +60,7 @@ pub struct LocationComponent {
     pub x: f64,
     pub y: f64,
     pub direction: direction::Direction,
-    pub hitbox: Option<hitbox::Hitbox>
+    pub hitbox: Option<event::Hitbox>
 }
 
 impl LocationComponent {
@@ -137,4 +137,10 @@ pub struct RenderComponent {
     pub animation: Option<animation::AnimationState>,
     pub visible: bool,
     pub render_layer: i32
+}
+
+pub struct EventComponent {
+    pub target: event::Target,
+    pub event_type: event::EventType,
+    pub trigger: event::Trigger
 }
