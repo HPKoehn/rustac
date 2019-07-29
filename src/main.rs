@@ -45,7 +45,7 @@ fn main() {
         .build()
         .unwrap();
         
-	let mut gl  = GlGraphics::new(opengl);
+	let ref mut gl  = GlGraphics::new(opengl);
     let sprite_textures = sprite::setup_sprite_textures();
 	
     // BEGIN test code
@@ -75,7 +75,7 @@ fn main() {
     events.set_ups(UPDATES_PER_SECOND);
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
-            render_game(&mut gl, &r, &mut ecs_, &sprite_textures, &render_conf);
+            render_game(gl, &r, &mut ecs_, &sprite_textures, &render_conf);
         }
         if let Some(p) = e.press_args() {
             input::handle_input(&p, &mut ecs_);

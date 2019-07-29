@@ -1,5 +1,5 @@
 use crate::ecs;
-use crate::gamestate::{actor, direction};
+use crate::gamestate::{actor, direction, status::StatusType};
 
 
 pub enum PlayerAction {
@@ -55,6 +55,55 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Dir
     // now get location as mutable to move
     if let Some(location) = ecs_.location_component.get_mut(entity) {
         location.apply(dir);
+    }
+    true
+}
+
+pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -> bool {
+    let mut attacker_atk = 0;
+    let mut target_def = 0;
+
+    // calculate atk for attacker
+    if let Some(basestats_c) = ecs_.basestats_component.get(attacker) {
+        attacker_atk = basestats_c.attack;
+
+        // check for basestats status modifications
+        if let Some(status_c) = ecs_.status_component.get(attacker) {
+            for status in status_c.status {
+                if let StatusType::BaseStatusModifier(modifier) = status.type_ {
+                    attacker_atk += modifier.attack
+                }
+            }
+        }
+        //TODO check for equipment
+
+    }
+
+    // calculate def for target
+    if let Some(basestats_c) = ecs_.basestats_component.get(target) {
+        target_def = basestats_c.defense;
+
+        // check for basestats status modifications
+        if let Some(status_c) = ecs_.status_component.get(target) {
+            for status in status_c.status {
+                match status.type_ {
+                    StatusType::BaseStatusModifier(modifier) => target_def += modifier.defense,
+                    StatusType::Invinsible => { return false; }
+                }
+            }
+        }
+        //TODO check for equipment
+    }
+
+    // apply damage (do at least 1 damage)
+    let damage = std::cmp::max(1, attacker_atk * 2 - target_def);
+
+    if let Some(target_health) = ecs_.health_component.get_mut(target) {
+        target_health.current -= damage;
+        target_health.current = std::cmp::max(0, target_health.current);
+    } else {
+        // if no health no attack
+        return false;
     }
     true
 }
