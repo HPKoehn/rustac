@@ -15,7 +15,7 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
             PlayerAction::Move(dir) => {
                 // get player position
                 if !move_entity(ecs_, player, dir) {
-                    print!("Player tried to move to a location, but was denied!");
+                    print!("Player tried to move to a location, but was denied!\n");
                 }
 
             },
@@ -71,5 +71,28 @@ pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64)-> bo
         true
     } else {
         false
+    }
+}
+
+pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
+    let mut actors: Vec<ecs::Entity> = Vec::new();
+    let mut all_done = true;
+    for entity in ecs_.allocator.live_indices() {
+        if let Some(actor_c) = ecs_.actor_component.get(entity) {
+            actors.push(entity);
+            if actor_c.state != actor::ActorState::DoneActing {
+                all_done = false;
+                return; // might be removed later if more needs to be done
+            }
+        }
+    }
+
+    if all_done {
+        for actor_entity in actors {
+            if let Some(actor_c) = ecs_.actor_component.get_mut(actor_entity) {
+                actor_c.state = actor::ActorState::WaitingForTurn;
+                actor_c.turn += 1;
+            }
+        }
     }
 }

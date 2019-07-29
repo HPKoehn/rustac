@@ -24,4 +24,13 @@ pub fn passive_wall_hitbox() -> Hitbox {
             type_: HitboxType::Wall,
             trigger: None
         }
+}
+
+pub fn passive_creature_hitbox() -> Hitbox {
+    Hitbox {
+        x: 0.0,
+        y: 0.0,
+        type_: HitboxType::Creature,
+        trigger: None
     }
+}

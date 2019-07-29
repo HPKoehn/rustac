@@ -26,7 +26,7 @@ pub fn create_floor_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
         hitbox: None
     });
     ecs_.render_component.set(entity, components::RenderComponent {
-        base_sprite: "default",
+        base_sprite: "floor_tile",
         base_sprite_size: 1.0,
         animation: None,
         visible: true,
@@ -45,6 +45,13 @@ pub fn create_wall_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
         y: y,
         direction: direction::Direction::Down,
         hitbox: Some(hitbox::passive_wall_hitbox())
+    });
+    ecs_.render_component.set(entity, components::RenderComponent {
+        base_sprite: "wall_tile",
+        base_sprite_size: 1.0,
+        animation: None,
+        visible: true,
+        render_layer: 1
     });
     entity
 }

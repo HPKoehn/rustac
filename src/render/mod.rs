@@ -66,7 +66,6 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
 
     // render entities in render order
     for (_render_level, entities) in render_levels {
-        println!("render level: {:?}\n entities: {:?}\n\n", _render_level, entities);
         for entity in entities {
             let render_c = ecs_.render_component.get(entity)
                                                 .expect("No render component, even though it must have one");

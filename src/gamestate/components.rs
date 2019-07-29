@@ -36,8 +36,8 @@ pub struct BaseStatsComponent {
 
 #[derive(Debug)]
 pub struct ActorComponent {
-    state: actor::ActorState,
-    turn: u64
+    pub state: actor::ActorState,
+    pub turn: u64
 }
 
 #[derive(Debug)]
