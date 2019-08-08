@@ -1,9 +1,5 @@
 use crate::ecs;
-use crate::gamestate::{
-    components,
-    direction,
-    dungeon,
-};
+use crate::gamestate::{components, direction, dungeon, LocationVec};
 use crate::event::{Hitbox, HitboxType};
 
 pub fn tear_down_level(ecs_: &mut ecs::ECS) {
@@ -20,8 +16,7 @@ pub fn create_floor_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
         type_: dungeon::DungeonElement::Floor
     });
     ecs_.location_component.set(entity, components::LocationComponent {
-        x: x,
-        y: y,
+        location: LocationVec { x, y },
         direction: direction::Direction::Down,
         hitbox: None
     });
@@ -41,8 +36,7 @@ pub fn create_wall_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
         type_: dungeon::DungeonElement::Wall
     });
     ecs_.location_component.set(entity, components::LocationComponent {
-        x: x,
-        y: y,
+        location: LocationVec { x, y },
         direction: direction::Direction::Down,
         hitbox: Some(Hitbox::new_small(HitboxType::Wall))
     });
@@ -62,8 +56,7 @@ pub fn create_connector_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity
         type_: dungeon::DungeonElement::Connector
     });
     ecs_.location_component.set(entity, components::LocationComponent {
-        x: x,
-        y: y,
+        location: LocationVec { x, y },
         direction: direction::Direction::Down,
         hitbox: None
     });
@@ -91,8 +84,8 @@ pub fn create_empty_room(ecs_: &mut ecs::ECS, x: f64, y: f64, xs: u64, ys: u64) 
     }
 }
 
-pub fn delete_dungeon_entities(ecs_: &mut ecs::ECS, type_: dungeon::DungeonElement, x: f64, y: f64) {
-    for entity in ecs_.get_entities_by_location(x, y) {
+pub fn delete_dungeon_entities(ecs_: &mut ecs::ECS, type_: dungeon::DungeonElement, location: LocationVec) {
+    for entity in ecs_.get_entities_by_location(location) {
         if let Some(dungeon_c) = ecs_.dungeon_component.get(entity) {
             if dungeon_c.type_ == type_ {
                 ecs_.allocator.deallocate(entity);

@@ -2,6 +2,7 @@ extern crate recs;
 use recs::allocation;
 
 use crate::gamestate::components::*;
+use crate::gamestate::LocationVec;
 
 pub type Entity = allocation::GenerationalIndex;
 pub type EntityMap<T> = allocation::GenerationalIndexArray<T>;
@@ -49,11 +50,11 @@ impl ECS {
         }
     }
 
-    pub fn get_entities_by_location(&self, x: f64, y: f64) -> Vec<Entity> {
+    pub fn get_entities_by_location(&self, target: LocationVec) -> Vec<Entity> {
         let mut result = Vec::new();
         for entity in self.allocator.live_indices() {
-            if let Some(location) = self.location_component.get(entity) {
-                if location.x == x && location.y == y {
+            if let Some(location_c) = self.location_component.get(entity) {
+                if location_c.location.x == target.x && location_c.location.y == target.y {
                     result.push(entity);
                 }
             }

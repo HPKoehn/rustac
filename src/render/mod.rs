@@ -38,9 +38,9 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
     let mut focused_entity_position_y = half_window_y;
 
     if let Some(focused_entity) = conf.focused_entity {
-        if let Some(location) = ecs_.location_component.get(focused_entity) {
-            focused_entity_position_x = location.x;
-            focused_entity_position_y = location.y;
+        if let Some(location_c) = ecs_.location_component.get(focused_entity) {
+            focused_entity_position_x = location_c.location.x;
+            focused_entity_position_y = location_c.location.y;
         }
     }
 
@@ -70,20 +70,21 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
             let render_c = ecs_.render_component.get(entity)
                                                 .expect("No render component, even though it must have one");
             if let Some(location_c) = ecs_.location_component.get(entity) {
+                let location = location_c.location;
                 // we need a location to render the entity
                 // check if entity is within cameras vision
-                if location_c.x + x_offset < 0.0 || location_c.x + x_offset >= conf.window_xs as f64 {
+                if location.x + x_offset < 0.0 || location.x + x_offset >= conf.window_xs as f64 {
                     continue;
                 }
-                if location_c.y + y_offset < 0.0 || location_c.y + y_offset >= conf.window_ys as f64 {
+                if location.y + y_offset < 0.0 || location.y + y_offset >= conf.window_ys as f64 {
                     continue;
                 }
 
                 // check if texture actually exists
                 if let Some(texture) = tex.get(&render_c.base_sprite) {
                     // we got a location so we will do some math
-                    let x = (location_c.x + x_offset) * conf.scale - conf.scale / 2.0;
-                    let y = (location_c.y + y_offset) * conf.scale - conf.scale / 2.0;
+                    let x = (location.x + x_offset) * conf.scale - conf.scale / 2.0;
+                    let y = (location.y + y_offset) * conf.scale - conf.scale / 2.0;
                     let size = conf.scale * render_c.base_sprite_size;
                     let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {

@@ -1,5 +1,6 @@
 use crate::ecs;
 use crate::gamestate::{actor, direction, status::StatusType};
+use std::ops::Add;
 
 
 pub enum PlayerAction {
@@ -26,11 +27,11 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
 // moves entity in direction if possible (hitbox check (currently only supports 1x1 hitboxes on location field))
 pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Direction) -> bool {
     // check if move is okay
-    if let Some(location) = ecs_.location_component.get(entity) {
-        let (tx, ty) = dir.apply(location.x, location.y);
+    if let Some(location_comp) = ecs_.location_component.get(entity) {
+        let location = location_comp.location.add(dir.into());
 
         // check all entities standing at target location (tx,ty)
-        let target_entities = ecs_.get_entities_by_location(tx, ty);
+        let target_entities = ecs_.get_entities_by_location(location);
         // no walking in space (as floor tiles are entities as well)
         if target_entities.is_empty() {
             return false;
@@ -39,10 +40,10 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Dir
         // check hitboxes at target location
         for target_entity in target_entities {
             // they will have a location component as we only get entities with such
-            if let Some(target_entity_location) = ecs_.location_component.get(target_entity) {
+            if let Some(target_entity_location_comp) = ecs_.location_component.get(target_entity) {
                 // get the hitboxes if they exist
-                if let Some(target_hitbox) = &target_entity_location.hitbox {
-                    if let Some(source_hitbox) = &location.hitbox {
+                if let Some(target_hitbox) = &target_entity_location_comp.hitbox {
+                    if let Some(source_hitbox) = &location_comp.hitbox {
                         if target_hitbox.type_ >= source_hitbox.type_ {
                             return false;
                         }
@@ -53,8 +54,8 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Dir
     }
 
     // now get location as mutable to move
-    if let Some(location) = ecs_.location_component.get_mut(entity) {
-        location.apply(dir);
+    if let Some(location_comp) = ecs_.location_component.get_mut(entity) {
+        location_comp.location += dir.into();
     }
     true
 }
@@ -69,8 +70,8 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
 
         // check for basestats status modifications
         if let Some(status_c) = ecs_.status_component.get(attacker) {
-            for status in status_c.status {
-                if let StatusType::BaseStatusModifier(modifier) = status.type_ {
+            for status in &status_c.status {
+                if let StatusType::BaseStatusModifier(modifier) = &status.type_ {
                     attacker_atk += modifier.attack
                 }
             }
@@ -85,8 +86,8 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
 
         // check for basestats status modifications
         if let Some(status_c) = ecs_.status_component.get(target) {
-            for status in status_c.status {
-                match status.type_ {
+            for status in &status_c.status {
+                match &status.type_ {
                     StatusType::BaseStatusModifier(modifier) => target_def += modifier.defense,
                     StatusType::Invinsible => { return false; }
                 }
@@ -112,9 +113,9 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
 // Force moves an entity to a location
 // returns false if entity does not exist or has no location component
 pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64) -> bool {
-    if let Some(location) = ecs_.location_component.get_mut(entity) {
-        location.x = x;
-        location.y = y;
+    if let Some(location_c) = ecs_.location_component.get_mut(entity) {
+        location_c.location.x = x;
+        location_c.location.y = y;
         true
     } else {
         false

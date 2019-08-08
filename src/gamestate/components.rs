@@ -4,15 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use std::collections::HashMap;
 
-use crate::gamestate::{
-    actor,
-    status,
-    item,
-    class,
-    spell,
-    direction,
-    dungeon,
-};
+use crate::gamestate::{actor, status, item, class, spell, direction, dungeon, LocationVec};
 
 use crate::event;
 
@@ -57,19 +49,9 @@ pub struct InventoryComponent {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LocationComponent {
-    pub x: f64,
-    pub y: f64,
+    pub location: LocationVec,
     pub direction: direction::Direction,
     pub hitbox: Option<event::Hitbox>
-}
-
-impl LocationComponent {
-    pub fn apply(&mut self, dir: direction::Direction) {
-        let (tx, ty) = dir.apply(self.x, self.y);
-        self.x = tx;
-        self.y = ty;
-        self.direction = dir;
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

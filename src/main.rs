@@ -20,6 +20,7 @@ use piston::input::*;
 use render::{render_game, sprite, RenderConfig};
 use gamestate::components;
 use event::{Hitbox, HitboxType};
+use crate::gamestate::LocationVec;
 
 const UPDATES_PER_SECOND: u64 = 30;
 
@@ -44,7 +45,7 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-        
+
 	let ref mut gl  = GlGraphics::new(opengl);
     let sprite_textures = sprite::setup_sprite_textures();
 	
@@ -56,10 +57,10 @@ fn main() {
     dungeon::create_empty_room(&mut ecs_, 0.0, 8.0, 8, 10);
     dungeon::delete_dungeon_entities(&mut ecs_, 
                                      gamestate::dungeon::DungeonElement::Wall,
-                                     4.0, 7.0);
+                                     LocationVec { x: 4.0, y: 7.0 });
     dungeon::delete_dungeon_entities(&mut ecs_, 
                                      gamestate::dungeon::DungeonElement::Wall,
-                                     4.0, 8.0);
+                                     LocationVec { x: 4.0, y: 8.0 });
 
     
     // player
@@ -98,8 +99,7 @@ fn create_test_dummy_player(ecs_: &mut ecs::ECS) -> ecs::Entity {
     });
 
     ecs_.location_component.set(player, components::LocationComponent {
-        x: 2.0,
-        y: 3.0,
+        location: LocationVec {x: 1.0, y: 1.0},
         direction: gamestate::direction::Direction::Down,
         hitbox: Some(Hitbox::new_small(HitboxType::Creature))
     });
