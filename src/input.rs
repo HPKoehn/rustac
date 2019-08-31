@@ -7,7 +7,7 @@ use crate::ecs::ECS;
 use crate::gamelogic::*;
 use crate::gamestate:: {
     actor::ActorState,
-    direction::Direction
+    movement::Direction
     };
 
 pub fn handle_input(press_args: &Button, ecs_: &mut ECS) {

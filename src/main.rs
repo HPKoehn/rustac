@@ -100,7 +100,8 @@ fn create_test_dummy_player(ecs_: &mut ecs::ECS) -> ecs::Entity {
 
     ecs_.location_component.set(player, components::LocationComponent {
         location: LocationVec {x: 1.0, y: 1.0},
-        direction: gamestate::direction::Direction::Down,
+        direction: gamestate::movement::Direction::Down,
+        move_intent: None,
         hitbox: Some(Hitbox::new_small(HitboxType::Creature))
     });
 

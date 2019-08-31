@@ -1,12 +1,12 @@
 use crate::ecs;
-use crate::gamestate::{actor, direction, status::StatusType};
+use crate::gamestate::{actor, movement, status::StatusType};
 use std::ops::Add;
 
 
 pub enum PlayerAction {
     Interact(ecs::Entity),
     Attack(ecs::Entity),
-    Move(direction::Direction),
+    Move(movement::Direction),
 }
 
 pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -> bool {
@@ -25,7 +25,7 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
 }
 
 // moves entity in direction if possible (hitbox check (currently only supports 1x1 hitboxes on location field))
-pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: direction::Direction) -> bool {
+pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Direction) -> bool {
     // check if move is okay
     if let Some(location_comp) = ecs_.location_component.get(entity) {
         let location = location_comp.location.add(dir.into());

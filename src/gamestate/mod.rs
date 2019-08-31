@@ -5,7 +5,7 @@ pub mod status;
 pub mod item;
 pub mod class;
 pub mod spell;
-pub mod direction;
+pub mod movement;
 pub mod dungeon;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign};
@@ -13,7 +13,7 @@ use std::ops::{Add, AddAssign, Sub, SubAssign};
 extern crate serde;
 use serde::{Serialize, Deserialize};
 
-use crate::gamestate::direction::Direction;
+use crate::gamestate::movement::Direction;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Copy, Clone)]
 pub struct LocationVec {

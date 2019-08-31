@@ -1,5 +1,5 @@
 use crate::ecs;
-use crate::gamestate::{components, direction, dungeon, LocationVec};
+use crate::gamestate::{components, movement, dungeon, LocationVec};
 use crate::event::{Hitbox, HitboxType};
 
 pub fn tear_down_level(ecs_: &mut ecs::ECS) {
@@ -17,7 +17,8 @@ pub fn create_floor_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
     });
     ecs_.location_component.set(entity, components::LocationComponent {
         location: LocationVec { x, y },
-        direction: direction::Direction::Down,
+        direction: movement::Direction::Down,
+        move_intent: None,
         hitbox: None
     });
     ecs_.render_component.set(entity, components::RenderComponent {
@@ -37,7 +38,8 @@ pub fn create_wall_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
     });
     ecs_.location_component.set(entity, components::LocationComponent {
         location: LocationVec { x, y },
-        direction: direction::Direction::Down,
+        direction: movement::Direction::Down,
+        move_intent: None,
         hitbox: Some(Hitbox::new_small(HitboxType::Wall))
     });
     ecs_.render_component.set(entity, components::RenderComponent {
@@ -57,7 +59,8 @@ pub fn create_connector_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity
     });
     ecs_.location_component.set(entity, components::LocationComponent {
         location: LocationVec { x, y },
-        direction: direction::Direction::Down,
+        direction: movement::Direction::Down,
+        move_intent: None,
         hitbox: None
     });
     entity

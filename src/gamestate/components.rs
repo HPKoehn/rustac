@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use std::collections::HashMap;
 
-use crate::gamestate::{actor, status, item, class, spell, direction, dungeon, LocationVec};
+use crate::gamestate::{actor, status, item, class, spell, movement, dungeon, LocationVec};
 
 use crate::event;
 
@@ -50,7 +50,8 @@ pub struct InventoryComponent {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LocationComponent {
     pub location: LocationVec,
-    pub direction: direction::Direction,
+    pub direction: movement::Direction,
+    pub move_intent: Option<movement::MoveIntent>,
     pub hitbox: Option<event::Hitbox>
 }
 
@@ -126,3 +127,5 @@ pub struct EventComponent {
     pub event_type: event::EventType,
     pub trigger: event::Trigger
 }
+
+
