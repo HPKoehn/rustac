@@ -55,7 +55,8 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Dire
 
     // now get location as mutable to move
     if let Some(location_comp) = ecs_.location_component.get_mut(entity) {
-        location_comp.location += dir.into();
+        // if we move we set the movement component
+        location_comp.move_intent = Some(movement::MoveIntent::Vector(dir.into(), movement::DEFAULT_SPEED));
     }
     true
 }
@@ -140,6 +141,22 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
             if let Some(actor_c) = ecs_.actor_component.get_mut(actor_entity) {
                 actor_c.state = actor::ActorState::WaitingForTurn;
                 actor_c.turn += 1;
+            }
+        }
+    }
+}
+
+// moves MovementIntents one step ahead
+pub fn update_entity_positions(ecs_: &mut ecs::ECS) {
+    for entity in ecs_.allocator.live_indices() {
+        if let Some(movement_c) = ecs_.location_component.get_mut(entity) {
+            let mut at_goal = false;
+            if let Some(movement_intent) = &mut movement_c.move_intent {
+                movement_c.location = movement_intent.move_from(&movement_c.location);
+                at_goal = movement_intent.has_arrived(&movement_c.location);
+            }
+            if at_goal {
+                movement_c.move_intent = None;
             }
         }
     }

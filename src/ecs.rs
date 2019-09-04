@@ -56,6 +56,11 @@ impl ECS {
             if let Some(location_c) = self.location_component.get(entity) {
                 if location_c.location.x == target.x && location_c.location.y == target.y {
                     result.push(entity);
+                } else if let Some(move_intent) = &location_c.move_intent {
+                    let goal = move_intent.target_goal(&location_c.location);
+                    if goal.x == target.x && goal.y == target.y {
+                        result.push(entity);
+                    }
                 }
             }
         }

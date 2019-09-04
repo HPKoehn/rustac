@@ -4,6 +4,8 @@ use serde::{Serialize, Deserialize};
 use crate::gamestate::LocationVec;
 use crate::UPDATES_PER_SECOND;
 
+pub const DEFAULT_SPEED: f64 = 2f64;
+
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Direction {
     Up,
@@ -12,7 +14,7 @@ pub enum Direction {
     Right
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum MoveIntent {
     Vector(LocationVec, f64),
     Position(LocationVec, f64)
@@ -35,11 +37,11 @@ impl MoveIntent {
                 dummy_move_intent.move_from(location)
             },
             MoveIntent::Vector(movement_vec, speed) => {
-                let step = *speed / UPDATES_PER_SECOND as f64;
+                let step = *speed / UPDATES_PER_SECOND as f64 + 0.000000000000001;
 
                 // get the direction of axis we will move towards
-                let x_direction = movement_vec.x / movement_vec.x.abs();
-                let y_direction = movement_vec.y / movement_vec.y.abs();
+                let x_direction = if movement_vec.x == 0.0 { 0.0 } else {movement_vec.x / movement_vec.x.abs()};
+                let y_direction = if movement_vec.y == 0.0 { 0.0 } else {movement_vec.y / movement_vec.y.abs()};
 
                 // amount we will move in said direction
                 let mut x_step = movement_vec.x.abs() / (movement_vec.x.abs() + movement_vec.y.abs()) * step;
@@ -83,5 +85,37 @@ impl MoveIntent {
                 y: start_location.y + movement_vec.y
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{LocationVec, DEFAULT_SPEED, UPDATES_PER_SECOND, MoveIntent};
+    const ZERO_VEC: LocationVec = LocationVec {x: 0.0, y: 0.0};
+
+    #[test]
+    fn arrived_vector() {
+        assert!(MoveIntent::Vector(ZERO_VEC, 1.0).has_arrived(&ZERO_VEC));
+        assert!(!MoveIntent::Vector(LocationVec{x:1.0, y:0.0}, 1.0).has_arrived(&ZERO_VEC));
+    }
+
+    #[test]
+    fn arrived_position() {
+        assert!(MoveIntent::Position(ZERO_VEC, 1.0).has_arrived(&ZERO_VEC));
+        assert!(MoveIntent::Position(LocationVec{x:2.0, y:1.0}, 1.0).has_arrived(&LocationVec{x:2.0, y:1.0}));
+        assert!(!MoveIntent::Position(LocationVec{x:1.0, y:2.0}, 1.0).has_arrived(&LocationVec{x:2.0,y:1.0}));
+    }
+
+    #[test]
+    fn move_vector() {
+        let mut intent = MoveIntent::Vector(LocationVec{x:1.0, y: 0.0}, 1.0);
+        let mut location = ZERO_VEC;
+        for _ in 0..UPDATES_PER_SECOND {
+            location = intent.move_from(&location);
+            print!("\n{:?}\n", &location);
+            print!("{:?}\n\n", &intent);
+        }
+        print!("{:?}", &location);
+        assert!(intent.has_arrived(&location));
     }
 }

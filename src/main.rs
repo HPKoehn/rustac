@@ -75,11 +75,17 @@ fn main() {
     let mut events = Events::new(EventSettings::new());
     events.set_ups(UPDATES_PER_SECOND);
     while let Some(e) = events.next(&mut window) {
-        if let Some(r) = e.render_args() {
-            render_game(gl, &r, &mut ecs_, &sprite_textures, &render_conf);
-        }
+
         if let Some(p) = e.press_args() {
             input::handle_input(&p, &mut ecs_);
+        }
+
+        if let Some(u) = e.update_args() {
+            gamelogic::update_entity_positions(&mut ecs_);
+        }
+
+        if let Some(r) = e.render_args() {
+            render_game(gl, &r, &mut ecs_, &sprite_textures, &render_conf);
         }
 
         gamelogic::check_and_perform_end_turn(&mut ecs_);
