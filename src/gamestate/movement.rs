@@ -1,10 +1,14 @@
 extern crate serde;
+extern crate math;
 
 use serde::{Serialize, Deserialize};
 use crate::gamestate::LocationVec;
 use crate::UPDATES_PER_SECOND;
 
+
 pub const DEFAULT_SPEED: f64 = 2f64;
+// number of decimal digits for rounding
+const PRECISION: f64 = 0.0000001;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Direction {
@@ -37,7 +41,7 @@ impl MoveIntent {
                 dummy_move_intent.move_from(location)
             },
             MoveIntent::Vector(movement_vec, speed) => {
-                let step = *speed / UPDATES_PER_SECOND as f64 + 0.000000000000001;
+                let step = *speed / UPDATES_PER_SECOND as f64; // + 0.1f64.powf(PRECISION * 2.0);
 
                 // get the direction of axis we will move towards
                 let x_direction = if movement_vec.x == 0.0 { 0.0 } else {movement_vec.x / movement_vec.x.abs()};
@@ -56,9 +60,25 @@ impl MoveIntent {
                     y: movement_vec.y - y_step * y_direction,
                 }, *speed);
 
+
+                // check if truncating is required
+                let mut new_x = location.x + x_step * x_direction;
+                if new_x.abs() - new_x.trunc().abs() < PRECISION && new_x > new_x.trunc() {
+                    new_x = new_x.round();
+                } else if new_x.abs() - (new_x + PRECISION).trunc().abs() < PRECISION{
+                    new_x = new_x.round();
+                }
+
+                let mut new_y = location.y + y_step * y_direction;
+                if new_y.abs() - new_y.trunc().abs() < PRECISION && new_y > new_y.trunc() {
+                    new_y = new_y.round();
+                } else if new_y.abs() - (new_y + PRECISION).trunc().abs() < PRECISION{
+                    new_y = new_y.round();
+                }
+
                 LocationVec {
-                    x: location.x + x_step * x_direction,
-                    y: location.y + y_step * y_direction
+                    x: new_x,
+                    y: new_y
                 }
             }
         }

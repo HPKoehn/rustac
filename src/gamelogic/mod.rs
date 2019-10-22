@@ -150,6 +150,10 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
 pub fn update_entity_positions(ecs_: &mut ecs::ECS) {
     for entity in ecs_.allocator.live_indices() {
         if let Some(movement_c) = ecs_.location_component.get_mut(entity) {
+            if let Some(_) = ecs_.actor_component.get(entity) {
+                print!("{:?}\n", &movement_c.location);
+            }
+            
             let mut at_goal = false;
             if let Some(movement_intent) = &mut movement_c.move_intent {
                 movement_c.location = movement_intent.move_from(&movement_c.location);

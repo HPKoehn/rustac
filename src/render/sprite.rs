@@ -22,5 +22,5 @@ pub fn setup_sprite_textures() -> SpriteTextures {
 }
 
 fn load_texture(name: &str) -> Texture {
-    return Texture::from_path(Path::new("./assets/textures/").join(name), &TextureSettings::new()).unwrap();
+    Texture::from_path(Path::new("./assets/textures/").join(name), &TextureSettings::new()).unwrap()
 }
