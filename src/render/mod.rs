@@ -73,10 +73,11 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                 let location = location_c.location;
                 // we need a location to render the entity
                 // check if entity is within cameras vision
-                if location.x + x_offset < 0.0 || location.x + x_offset >= conf.window_xs as f64 {
+                // (+1 to render one row and column more to have no tiles appearing from nowhere)
+                if location.x + x_offset + 1.0 < 0.0 || location.x + x_offset >= conf.window_xs as f64 {
                     continue;
                 }
-                if location.y + y_offset < 0.0 || location.y + y_offset >= conf.window_ys as f64 {
+                if location.y + y_offset + 1.0 < 0.0 || location.y + y_offset >= conf.window_ys as f64 {
                     continue;
                 }
 

@@ -41,7 +41,7 @@ impl MoveIntent {
                 dummy_move_intent.move_from(location)
             },
             MoveIntent::Vector(movement_vec, speed) => {
-                let step = *speed / UPDATES_PER_SECOND as f64; // + 0.1f64.powf(PRECISION * 2.0);
+                let step = *speed / UPDATES_PER_SECOND as f64;
 
                 // get the direction of axis we will move towards
                 let x_direction = if movement_vec.x == 0.0 { 0.0 } else {movement_vec.x / movement_vec.x.abs()};
@@ -55,13 +55,26 @@ impl MoveIntent {
                 x_step = x_step.min(movement_vec.x.abs());
                 y_step = y_step.min(movement_vec.y.abs());
 
+                // check if the rest of the path is shorten than the precision
+                let mut new_intent_x = movement_vec.x - x_step * x_direction;
+                let mut new_intent_y = movement_vec.y - y_step * y_direction;
+
+                if new_intent_x.abs() < PRECISION {
+                    new_intent_x = 0f64;
+                }
+
+                if new_intent_y.abs() < PRECISION {
+                    new_intent_y = 0f64
+                }
+
                 *self = MoveIntent::Vector(LocationVec {
-                    x: movement_vec.x - x_step * x_direction,
-                    y: movement_vec.y - y_step * y_direction,
+                    x: new_intent_x,
+                    y: new_intent_y,
                 }, *speed);
 
 
                 // check if truncating is required
+                // (required to fight unprecision of f64s)
                 let mut new_x = location.x + x_step * x_direction;
                 if new_x.abs() - new_x.trunc().abs() < PRECISION && new_x > new_x.trunc() {
                     new_x = new_x.round();
@@ -76,6 +89,7 @@ impl MoveIntent {
                     new_y = new_y.round();
                 }
 
+                // return new location
                 LocationVec {
                     x: new_x,
                     y: new_y
@@ -110,7 +124,7 @@ impl MoveIntent {
 
 #[cfg(test)]
 mod tests {
-    use super::{LocationVec, DEFAULT_SPEED, UPDATES_PER_SECOND, MoveIntent};
+    use super::{LocationVec, UPDATES_PER_SECOND, MoveIntent};
     const ZERO_VEC: LocationVec = LocationVec {x: 0.0, y: 0.0};
 
     #[test]

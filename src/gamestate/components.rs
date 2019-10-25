@@ -76,8 +76,8 @@ pub struct CasterComponent {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HumanoidComponent {
-    pub left_hand: Option<item::Equipment>,
-    pub right_hand: Option<item::Equipment>,
+    pub off_hand: Option<item::Equipment>,
+    pub main_hand: Option<item::Equipment>,
 
     pub head: Option<item::Equipment>,
     pub body: Option<item::Equipment>,

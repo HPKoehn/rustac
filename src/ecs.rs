@@ -1,6 +1,8 @@
 extern crate recs;
 use recs::allocation;
 
+use std::collections::HashMap;
+
 use crate::gamestate::components::*;
 use crate::gamestate::LocationVec;
 
@@ -25,6 +27,9 @@ pub struct ECS {
     pub player_component: EntityMap<PlayerComponent>,
     pub render_component: EntityMap<RenderComponent>,
     pub status_component: EntityMap<StatusComponent>,
+
+    pub global_state_table: HashMap<String, String>,
+    pub index_cache: HashMap<String, allocation::GenerationalIndex>,
 }
 
 impl ECS {
@@ -47,6 +52,9 @@ impl ECS {
             player_component: EntityMap::new(),
             render_component: EntityMap::new(),
             status_component: EntityMap::new(),
+
+            global_state_table: HashMap::new(),
+            index_cache: HashMap::new()
         }
     }
 
@@ -67,8 +75,18 @@ impl ECS {
         result
     }
 
-    pub fn get_player_entity(&self) -> Option<Entity> {
-        self.allocator.live_indices().into_iter().find(|&e| self.player_component.get(e).is_some())
+    pub fn get_player_entity(&mut self) -> Option<Entity> {
+        if let Some(index) = self.index_cache.get("Player") {
+            if self.allocator.is_live(*index){
+                    return Some(*index);
+            }
+        }
+        if let Some(index) = self.allocator.live_indices().into_iter().find(|&e| self.player_component.get(e).is_some()) {
+            self.index_cache.insert("Player".to_string(), index);
+            Some(index)
+        } else {
+            None
+        }
     }
 }
 
