@@ -13,7 +13,7 @@ pub struct Status {
 #[derive(Debug, Serialize, Deserialize)]
 pub enum StatusType {
     BaseStatusModifier(BaseStatusModifier),
-    Invinsible
+    Invincible
 }
 
 #[derive(Debug, Serialize, Deserialize)]

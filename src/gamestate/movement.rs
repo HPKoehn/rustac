@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use crate::gamestate::LocationVec;
 use crate::UPDATES_PER_SECOND;
 
-
+// the default movement speed (fields per second)
 pub const DEFAULT_SPEED: f64 = 2f64;
 // number of decimal digits for rounding
 const PRECISION: f64 = 0.0000001;
@@ -18,6 +18,7 @@ pub enum Direction {
     Right
 }
 
+/// Describes the intent of an entity to move to a certain location
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum MoveIntent {
     Vector(LocationVec, f64),
@@ -26,9 +27,26 @@ pub enum MoveIntent {
 
 impl MoveIntent {
 
-    // move towards goal and give new Location vec, will change if Vector MoveIntent
+    // move towards goal and give new Location vec, will change if Vector MoveInten
     // param location: current location
     // return: new location
+
+    /// Lets the `MoveIntent` progress one step towards the target Location
+    /// One step is the speed of the `MoveIntent` divided by 'game updates per second'.
+    /// This means a `MoveIntent` will progress speed amount of fields after 'game updates per second' times.
+    /// This function should be called for each MoveIntent after each game update, resulting in
+    /// speed amount of fields per second.
+    /// 
+    /// It is possible to force_move the entity belonging to the `MoveIntent` to a different place while an `MoveIntent`
+    /// is inplace, but depending on the type of `MoveIntent` this might result in weird egde cases.
+    /// 
+    /// ### Arguments
+    /// `location` - The current location from which the `MoveIntent` shall make its move. Normally this is the location
+    /// of the entity this intent is attached to
+    /// 
+    /// ### Returns
+    /// The new location after moving a step
+    /// 
     pub fn move_from(&mut self, location: &LocationVec) -> LocationVec {
         match self {
             MoveIntent::Position(target_location, speed) => {
@@ -98,11 +116,18 @@ impl MoveIntent {
         }
     }
 
-    // if goal is reached
-    pub fn has_arrived(&self, start_location: &LocationVec) -> bool {
+    /// Tests if the `MoveIntent` has reached its goal being at a certain location
+    /// 
+    /// ### Arguments
+    /// * current_location - The current location to test from
+    /// 
+    /// ### Returns
+    /// True if the `MoveIntent` has reacheds its goal, else false
+    /// 
+    pub fn has_arrived(&self, current_location: &LocationVec) -> bool {
         match self {
             MoveIntent::Position(target_location, _) => {
-                start_location == target_location
+                current_location == target_location
             },
             MoveIntent::Vector(movement_vec, _) => {
                 movement_vec.x == 0.0 && movement_vec.y == 0.0
@@ -110,13 +135,20 @@ impl MoveIntent {
         }
     }
 
-    // gives LocationVec of the goal
-    pub fn target_goal(&self, start_location: &LocationVec) -> LocationVec {
+    /// Computes the location the MovementIntent will go towards from a given location
+    /// 
+    /// ### Arguments
+    /// * current_location - The current location to compute from
+    /// 
+    /// ### Returns
+    /// The target location
+    /// 
+    pub fn target_goal(&self, current_location: &LocationVec) -> LocationVec {
         match self {
             MoveIntent::Position(target_location, _) => *target_location,
             MoveIntent::Vector(movement_vec, _) => LocationVec {
-                x: start_location.x + movement_vec.x,
-                y: start_location.y + movement_vec.y
+                x: current_location.x + movement_vec.x,
+                y: current_location.y + movement_vec.y
             }
         }
     }

@@ -15,6 +15,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::gamestate::movement::Direction;
 
+/// A two-dimensional vector for describing locations
 #[derive(Debug, PartialEq, Serialize, Deserialize, Copy, Clone)]
 pub struct LocationVec {
     pub x: f64,

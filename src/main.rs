@@ -11,6 +11,10 @@ extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
 
+#[macro_use]
+extern crate log;
+extern crate simple_logger;
+
 use piston::window::WindowSettings;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{GlGraphics, OpenGL};
@@ -22,9 +26,12 @@ use gamestate::components;
 use event::{Hitbox, HitboxType};
 use crate::gamestate::LocationVec;
 
+// game ticks per second
 const UPDATES_PER_SECOND: u64 = 30;
 
 fn main() {
+    // initialize logger
+    simple_logger::init().unwrap();
 
     // setup of main data structures
     let mut ecs_ = ecs::ECS::new();
@@ -34,6 +41,8 @@ fn main() {
         window_ys: 1000,
         focused_entity: None
     };
+
+    info!("Creating window with {:?}", render_conf);
     
     // setup of opengl window
     let opengl  = OpenGL::V3_2;

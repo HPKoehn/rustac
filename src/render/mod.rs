@@ -14,6 +14,7 @@ use graphics::rectangle::square;
 
 use crate::ecs;
 
+#[derive(Debug)]
 pub struct RenderConfig {
     // determines the ratio between pixels and ingame units
     pub scale: f64,

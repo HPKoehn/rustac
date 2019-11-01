@@ -2,20 +2,30 @@ use crate::ecs;
 use crate::gamestate::{actor, movement, status::StatusType};
 use std::ops::Add;
 
-
+/// Possible actions for the player
 pub enum PlayerAction {
     Interact(ecs::Entity),
     Attack(ecs::Entity),
     Move(movement::Direction),
 }
 
+/// Executes a player action
+/// 
+/// ### Arguments
+/// * `ecs_`          - The entity component system to perform on
+/// * `player_action` - The player_action to execute
+/// 
+/// ### Returns
+/// True if the action was performed successfully, else false
+/// 
 pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -> bool {
     if let Some(player) = ecs_.get_player_entity() {
         match player_action {
             PlayerAction::Move(dir) => {
                 // get player position
                 if !move_entity(ecs_, player, dir) {
-                    print!("Player tried to move to a location, but was denied!\n");
+                    debug!("Player tried to move to a location, but was denied!");
+                    return false;
                 }
             }
             _ => { /*TODO Implement other actions*/ }
@@ -24,7 +34,17 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
     true
 }
 
-// moves entity in direction if possible (hitbox check (currently only supports 1x1 hitboxes on location field))
+/// Sets a `MoveIntent` for the entity to move into the given direction by one field. To be able to move into a direction, 
+/// there must be no colliding `event::Hitbox` of equal or greater ordering layer than all entities at the target location 
+/// and there must be an entity at all (e.g. a floor tile entity)
+/// 
+/// ### Arguments
+/// * `ecs_`   - The entity component system to perform on
+/// * `entity` - The entity to move
+/// * `dir`    - The direction to move into
+/// 
+/// ### Returns
+/// True if all prerequirements were fullfilled and the `MoveIntent` was set successfully, else false
 pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Direction) -> bool {
     // check if move is okay
     if let Some(location_comp) = ecs_.location_component.get(entity) {
@@ -61,6 +81,18 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Dire
     true
 }
 
+/// Performs damage calculation for an attacking and definding entity and then applies damage.
+/// Status are considered the calcution (also status like `StatusType::Invincible`).
+/// **NOTE**: No prerequirements to perfom the attack like range checks are performed here!
+/// 
+/// ### Arguments
+/// * `ecs_`     - The entity component system to perform on
+/// * `attacker` - The attacking entity
+/// * `target`   - The definding/attacked entity
+/// 
+/// ### Returns
+/// True if the attack was successful and applied at least one damage, else false
+/// 
 pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -> bool {
     let mut attacker_atk = 0;
     let mut target_def = 0;
@@ -90,7 +122,7 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
             for status in &status_c.status {
                 match &status.type_ {
                     StatusType::BaseStatusModifier(modifier) => target_def += modifier.defense,
-                    StatusType::Invinsible => { return false; }
+                    StatusType::Invincible => { return false; }
                 }
             }
         }
@@ -111,8 +143,16 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
 }
 
 
-// Force moves an entity to a location
-// returns false if entity does not exist or has no location component
+/// Sets the location for an entity ignoring any movement restrictions (force move)
+/// 
+/// ### Arguments
+/// * `ecs_`   - The entity component system to perform on
+/// * `entity` - The entity to move
+/// * `x`      - The x coordinat of target location
+/// * `y`      - The y coordinat of target location
+/// 
+/// ### Returns
+/// True if the location could be set, else false
 pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64) -> bool {
     if let Some(location_c) = ecs_.location_component.get_mut(entity) {
         location_c.location.x = x;
@@ -123,7 +163,17 @@ pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64) -> b
     }
 }
 
-pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
+/// Tests if all entities eligible have performed their turns
+/// and if so increase the turn count for each actor and ready their
+/// action once again
+/// 
+/// ### Arguments
+/// * `ecs_`:  - The entity component system to perform on
+/// 
+/// ### Returns
+/// True if all entities have finished their turn, else false
+/// 
+pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) -> bool {
     let mut actors: Vec<ecs::Entity> = Vec::new();
     let mut all_done = true;
     for entity in ecs_.allocator.live_indices() {
@@ -131,7 +181,6 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
             actors.push(entity);
             if actor_c.state != actor::ActorState::DoneActing {
                 all_done = false;
-                return; // might be removed later if more needs to be done
             }
         }
     }
@@ -144,16 +193,17 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) {
             }
         }
     }
+    all_done
 }
 
-// moves MovementIntents one step ahead
+/// Advances all `MovementIntents` by one step and updates their `LocationComponent`
+/// 
+/// ### Arguments
+/// * `ecs_` - The entity component system to perform on
+/// 
 pub fn update_entity_positions(ecs_: &mut ecs::ECS) {
     for entity in ecs_.allocator.live_indices() {
         if let Some(movement_c) = ecs_.location_component.get_mut(entity) {
-            if let Some(_) = ecs_.actor_component.get(entity) {
-                print!("{:?}\n", &movement_c.location);
-            }
-            
             let mut at_goal = false;
             if let Some(movement_intent) = &mut movement_c.move_intent {
                 movement_c.location = movement_intent.move_from(&movement_c.location);

@@ -13,12 +13,15 @@ use crate::render::{
     sprite
 };
 
+
+/// Enables an Entity to take damage, heal and die
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HealthComponent {
     pub maximum: i32,
     pub current: i32
 }
 
+/// Enables an Entity to have changable offensive and defensive capabilities.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BaseStatsComponent {
     pub attack: i32,
@@ -27,7 +30,7 @@ pub struct BaseStatsComponent {
     pub resistence: i32
 }
 
-
+/// Enables an Entity to get a turn and perform actions
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ActorComponent {
     pub state: actor::ActorState,
@@ -36,17 +39,21 @@ pub struct ActorComponent {
     pub performed_actions : u64,
 }
 
+/// Enables an Entity to recieve status effects
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StatusComponent {
     pub status: Vec<status::Status>
 }
 
+/// Enables an entity to have items
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InventoryComponent {
     pub items: Vec<item::Item>, //todo change to entity index
     pub capacity: i32
 }
 
+/// Enables an entity to be in the level and physically interact
+/// with other entities with a LocationComponent
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LocationComponent {
     pub location: LocationVec,
@@ -55,11 +62,13 @@ pub struct LocationComponent {
     pub hitbox: Option<event::Hitbox>
 }
 
+/// Enables an entity to have a name
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NameComponent {
     pub name: String
 }
 
+/// Enables an entity to have a class, a level and to gain expirience
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClassComponent {
     pub class: class::Class,
@@ -67,6 +76,7 @@ pub struct ClassComponent {
     pub experience: i32
 }
 
+/// Enables an entity to have and cast spells and abilities
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CasterComponent {
     pub current_mana: i32,
@@ -74,6 +84,7 @@ pub struct CasterComponent {
     pub spells: Vec<spell::Spell>
 }
 
+/// Enables an entity to equip items like a human
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HumanoidComponent {
     pub off_hand: Option<item::Equipment>,
@@ -86,24 +97,27 @@ pub struct HumanoidComponent {
     pub feet: Option<item::Equipment>,
 }
 
+/// Enables an entity to have AI behavior
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NpcBehaviorComponent {
     // todo behavior for monsters etc
 }
 
-// what do entities drop if they die
+/// Enables an entity to drop items
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ItemDropComponent {
     pub gold: i32,
     pub item: Option<item::ItemId>
 }
 
-// shows belonging to a room
+/// Classifies an entity as specific parts of the dungeon environment
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DungeonComponent {
     pub type_: dungeon::DungeonElement
 }
 
+/// Classifies an entity as a player and enables them to carry gold and 
+/// save state/progress
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PlayerComponent {
     pub stage_level: i32,
@@ -113,6 +127,7 @@ pub struct PlayerComponent {
     pub progression_flags: HashMap<String, bool>
 }
 
+/// Enables an entity to have a sprite and be rendered
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RenderComponent {
     pub base_sprite: sprite::SpriteId, // change to ressource entity?
@@ -122,6 +137,7 @@ pub struct RenderComponent {
     pub render_layer: i32
 }
 
+/// Enables an entity to trigger events when certain triggers are met
 pub struct EventComponent {
     pub target: event::Target,
     pub event_type: event::EventType,
