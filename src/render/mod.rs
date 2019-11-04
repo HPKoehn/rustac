@@ -9,10 +9,11 @@ extern crate opengl_graphics;
 
 use piston::input::RenderArgs;
 use opengl_graphics:: {GlGraphics};
-use graphics::{Image, clear, draw_state::DrawState};
+use graphics::{Image, clear, draw_state::DrawState, Transformed};
 use graphics::rectangle::square;
 
 use crate::ecs;
+use crate::gamestate::movement::Direction;
 
 #[derive(Debug)]
 pub struct RenderConfig {
@@ -90,7 +91,16 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                     let size = conf.scale * render_c.base_sprite_size;
                     let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {
-                        image.draw(texture, &DrawState::default(), c.transform, gl);
+                        let rotation = match location_c.direction {
+                            Direction::Up => {180.0},
+                            Direction::Left => {90.0},
+                            Direction::Down => {0.0},
+                            Direction::Right => {-90.0},
+                        };
+                        let new_c = c.trans(x + conf.scale / 2.0, y + conf.scale /2.0)
+                                              .rot_deg(rotation)
+                                              .trans(-x - conf.scale / 2.0, -y - conf.scale / 2.0);
+                        image.draw(texture, &DrawState::default(), new_c.transform, gl);
                     });
                 } else {
                     print!("Texture not found for {:?}", render_c.base_sprite);

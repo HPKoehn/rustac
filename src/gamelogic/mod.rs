@@ -97,6 +97,8 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Dire
     if let Some(location_comp) = ecs_.location_component.get_mut(entity) {
         // if we move we set the movement component
         location_comp.move_intent = Some(movement::MoveIntent::Vector(dir.into(), movement::DEFAULT_SPEED));
+        // set now direction
+        location_comp.direction = dir;
     }
     true
 }
