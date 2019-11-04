@@ -7,6 +7,6 @@ use serde::{Serialize, Deserialize};
 pub enum DungeonElement {
     Floor,
     Wall,
-    Connector,
+    Connector,          // teleporter between dungeon levels
     Event,
 }

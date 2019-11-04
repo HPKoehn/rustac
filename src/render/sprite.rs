@@ -17,6 +17,7 @@ pub fn setup_sprite_textures() -> SpriteTextures {
     sprite_textures.insert("floor_tile".to_string(), load_texture("floor_tile.png"));
     sprite_textures.insert("wall_tile".to_string(), load_texture("wall_tile.png"));
     sprite_textures.insert("player".to_string(), load_texture("player.png"));
+    sprite_textures.insert("dummy".to_string(), load_texture("dummy.png"));
     
     sprite_textures
 }

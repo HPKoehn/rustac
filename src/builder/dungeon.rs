@@ -66,6 +66,44 @@ pub fn create_connector_tile(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity
     entity
 }
 
+pub fn create_attack_dummy(ecs_: &mut ecs::ECS, x: f64, y: f64) -> ecs::Entity {
+    let entity = ecs_.allocator.allocate();
+    ecs_.location_component.set(entity, components::LocationComponent {
+        location: LocationVec { x, y},
+        direction: movement::Direction::Down,
+        move_intent: None,
+        hitbox: None
+    });
+
+    ecs_.name_component.set(entity, components::NameComponent {
+        name: "Dummy".to_string()
+    });
+
+    ecs_.health_component.set(entity, components::HealthComponent {
+        current: 100,
+        maximum: 100
+    });
+
+    ecs_.basestats_component.set(entity, components::BaseStatsComponent {
+        attack: 5,
+        defense: 5,
+        magic: 5,
+        resistence: 5
+    });
+
+    ecs_.render_component.set(entity, components::RenderComponent {
+        base_sprite: "dummy".to_string(),
+        base_sprite_size: 1.0,
+        animation: None,
+        visible: true,
+        render_layer: 2
+    });
+
+    entity
+
+
+}
+
 pub fn create_empty_room(ecs_: &mut ecs::ECS, x: f64, y: f64, xs: u64, ys: u64) {
     //floor
     for i in 0..xs {

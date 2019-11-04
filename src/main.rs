@@ -5,6 +5,7 @@ mod render;
 mod builder;
 mod ecs;
 mod input;
+mod ut;
 
 extern crate piston;
 extern crate graphics;
@@ -70,6 +71,7 @@ fn main() {
     dungeon::delete_dungeon_entities(&mut ecs_, 
                                      gamestate::dungeon::DungeonElement::Wall,
                                      LocationVec { x: 4.0, y: 8.0 });
+    dungeon::create_attack_dummy(&mut ecs_, 3.0, 4.0);
 
     
     // player
@@ -132,6 +134,17 @@ fn create_test_dummy_player(ecs_: &mut ecs::ECS) -> ecs::Entity {
         stage_level: 0,
         gold: 0,
         progression_flags: std::collections::HashMap::new()
+    });
+
+    ecs_.basestats_component.set(player, components::BaseStatsComponent {
+        attack: 10,
+        defense: 10,
+        magic: 10,
+        resistence: 10
+    });
+
+    ecs_.name_component.set(player, components::NameComponent {
+        name: "Player".to_string()
     });
 
     player

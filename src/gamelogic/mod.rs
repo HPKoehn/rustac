@@ -1,11 +1,15 @@
 use crate::ecs;
-use crate::gamestate::{actor, movement, status::StatusType};
+use crate::gamestate::{actor, movement, status::StatusType, LocationVec};
+use crate::ut;
 use std::ops::Add;
+
+extern crate rand;
+use rand::Rng;
 
 /// Possible actions for the player
 pub enum PlayerAction {
     Interact(ecs::Entity),
-    Attack(ecs::Entity),
+    Attack,
     Move(movement::Direction),
 }
 
@@ -25,6 +29,22 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
                 // get player position
                 if !move_entity(ecs_, player, dir) {
                     debug!("Player tried to move to a location, but was denied!");
+                    return false;
+                }
+            }
+            PlayerAction::Attack => {
+                // find player
+                if let Some(location_c) = ecs_.location_component.get(player) {
+                    let target_location = location_c.location + LocationVec::from(location_c.direction);
+                    let potential_targets = ecs_.get_entities_by_location(target_location);
+                    for target in potential_targets {
+                        if let Some(_) = ecs_.health_component.get(target) {
+                            attack(ecs_, player, target);
+                        }
+                    }
+                }
+                else {
+                    debug!("Player tried to attack, but has no location!");
                     return false;
                 }
             }
@@ -95,7 +115,9 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Dire
 /// 
 pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -> bool {
     let mut attacker_atk = 0;
+    let mut attacker_mul = 1.0;
     let mut target_def = 0;
+    let mut target_mul = 1.0;
 
     // calculate atk for attacker
     if let Some(basestats_c) = ecs_.basestats_component.get(attacker) {
@@ -104,8 +126,10 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
         // check for basestats status modifications
         if let Some(status_c) = ecs_.status_component.get(attacker) {
             for status in &status_c.status {
-                if let StatusType::BaseStatusModifier(modifier) = &status.type_ {
-                    attacker_atk += modifier.attack
+                match &status.type_ {
+                    StatusType::BaseStatusModifier(modifier) => attacker_atk += modifier.attack,
+                    StatusType::BaseStatusMuliplier(multiplier) => attacker_mul += multiplier.attack,
+                    _ => {}
                 }
             }
         }
@@ -122,6 +146,7 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
             for status in &status_c.status {
                 match &status.type_ {
                     StatusType::BaseStatusModifier(modifier) => target_def += modifier.defense,
+                    StatusType::BaseStatusMuliplier(multiplier) => target_mul += multiplier.defense,
                     StatusType::Invincible => { return false; }
                 }
             }
@@ -129,8 +154,15 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
         //TODO check for equipment
     }
 
+    // attacks vary by 10%  (90% - 110%)
+    let dmg_percentile = rand::thread_rng().gen_range(90.0, 110.0) / 100.0;
     // apply damage (do at least 1 damage)
-    let damage = std::cmp::max(1, attacker_atk * 2 - target_def);
+    let damage = std::cmp::max(
+        1, 
+        ((attacker_atk * 2 - target_def) as f32 * dmg_percentile).round() as i32
+    );
+
+    info!("{} dealt {} damage to {}", ut::name_or_id(ecs_, attacker), damage, ut::name_or_id(ecs_, target));
 
     if let Some(target_health) = ecs_.health_component.get_mut(target) {
         target_health.current -= damage;

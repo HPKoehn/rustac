@@ -48,6 +48,9 @@ fn dungeon_actor_controls(button: &Button, ecs_: &mut ECS) {
             },
             Key::Right => {
                 perform_player_action(ecs_, PlayerAction::Move(Direction::Right))
+            },
+            Key::Space => {
+                perform_player_action(ecs_, PlayerAction::Attack)
             }
             _ => {false}
         };
