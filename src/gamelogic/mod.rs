@@ -117,7 +117,7 @@ pub fn move_entity(ecs_: &mut ecs::ECS, entity: ecs::Entity, dir: movement::Dire
 /// 
 pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -> bool {
     let mut attacker_atk = 0;
-    let mut attacker_mul = 1.0;
+    let mut attacker_mul = 2.0;
     let mut target_def = 0;
     let mut target_mul = 1.0;
 
@@ -161,7 +161,7 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
     // apply damage (do at least 1 damage)
     let damage = std::cmp::max(
         1, 
-        ((attacker_atk * 2 - target_def) as f32 * dmg_percentile).round() as i32
+        ((attacker_atk as f32 * attacker_mul  - target_def as f32 * target_mul) * dmg_percentile) as i32
     );
 
     info!("{} dealt {} damage to {}", ut::name_or_id(ecs_, attacker), damage, ut::name_or_id(ecs_, target));
