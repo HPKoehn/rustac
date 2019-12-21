@@ -22,14 +22,16 @@ pub enum PlayerAction {
 /// ### Returns
 /// True if the action was performed successfully, else false
 /// 
-pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -> bool {
+pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) {
     if let Some(player) = ecs_.get_player_entity() {
         match player_action {
             PlayerAction::Move(dir) => {
                 // get player position
                 if !move_entity(ecs_, player, dir) {
                     debug!("Player tried to move to a location, but was denied!");
-                    return false;
+                } else {
+                    // player is starting to move and therefore acting
+                    ecs_.actor_component.get_mut(player).map(|act| act.state = actor::ActorState::Acting);
                 }
             }
             PlayerAction::Attack => {
@@ -40,18 +42,17 @@ pub fn perform_player_action(ecs_: &mut ecs::ECS, player_action: PlayerAction) -
                     for target in potential_targets {
                         if let Some(_) = ecs_.health_component.get(target) {
                             attack(ecs_, player, target);
+                            ecs_.actor_component.get_mut(player).map(|act| act.state = actor::ActorState::DoneActing);
                         }
                     }
                 }
                 else {
                     debug!("Player tried to attack, but has no location!");
-                    return false;
                 }
             }
             _ => { /*TODO Implement other actions*/ }
         }
     }
-    true
 }
 
 /// Sets a `MoveIntent` for the entity to move into the given direction by one field. To be able to move into a direction, 
@@ -199,7 +200,8 @@ pub fn force_move(ecs_: &mut ecs::ECS, entity: ecs::Entity, x: f64, y: f64) -> b
 
 /// Tests if all entities eligible have performed their turns
 /// and if so increase the turn count for each actor and ready their
-/// action once again
+/// action once again. If an entity still has moves left, reactivate
+/// the actor and increase his performed moves
 /// 
 /// ### Arguments
 /// * `ecs_`:  - The entity component system to perform on
@@ -211,11 +213,17 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) -> bool {
     let mut actors: Vec<ecs::Entity> = Vec::new();
     let mut all_done = true;
     for entity in ecs_.allocator.live_indices() {
-        if let Some(actor_c) = ecs_.actor_component.get(entity) {
+        if let Some(actor_c) = ecs_.actor_component.get_mut(entity) {
             actors.push(entity);
             if actor_c.state != actor::ActorState::DoneActing {
                 all_done = false;
-            }
+            } else if actor_c.state == actor::ActorState::DoneActing 
+                && actor_c.performed_actions < actor_c.max_actions {
+                    // in case we have a actor who has finished some action
+                    // but is allowed to do more, we reactivate him
+                    actor_c.performed_actions += 1;
+                    actor_c.state = actor::ActorState::WaitingForTurn;
+                }
         }
     }
 
@@ -224,6 +232,7 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) -> bool {
             if let Some(actor_c) = ecs_.actor_component.get_mut(actor_entity) {
                 actor_c.state = actor::ActorState::WaitingForTurn;
                 actor_c.turn += 1;
+                actor_c.performed_actions = 0;
             }
         }
     }
@@ -231,6 +240,8 @@ pub fn check_and_perform_end_turn(ecs_: &mut ecs::ECS) -> bool {
 }
 
 /// Advances all `MovementIntents` by one step and updates their `LocationComponent`
+/// If the moved entity had an `ActingComponent` and was currently acting, it will be
+/// set to done acting
 /// 
 /// ### Arguments
 /// * `ecs_` - The entity component system to perform on
@@ -245,6 +256,11 @@ pub fn update_entity_positions(ecs_: &mut ecs::ECS) {
             }
             if at_goal {
                 movement_c.move_intent = None;
+                // check if the entity had an 
+                if let Some(acting_c) = ecs_.actor_component.get_mut(entity) {
+                    acting_c.state = actor::ActorState::DoneActing;
+                }
+
             }
         }
     }

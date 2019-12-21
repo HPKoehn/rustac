@@ -85,10 +85,18 @@ fn main() {
 
     let mut events = Events::new(EventSettings::new());
     events.set_ups(UPDATES_PER_SECOND);
+
+    let mut button_buffer: Option<Button> = None;
+
     while let Some(e) = events.next(&mut window) {
 
-        if let Some(p) = e.press_args() {
-            input::handle_input(&p, &mut ecs_);
+        if e.press_args().is_some() || button_buffer.is_some() {
+            debug!("{:?}", &button_buffer);
+            if let Some(p) = e.press_args() {
+                button_buffer = input::handle_input(&p, &mut ecs_);
+            } else {
+                button_buffer = input::handle_input(&button_buffer.unwrap(), &mut ecs_);
+            }
         }
 
         if let Some(u) = e.update_args() {

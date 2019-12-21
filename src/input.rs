@@ -10,17 +10,20 @@ use crate::gamestate:: {
     movement::Direction
     };
 
-pub fn handle_input(press_args: &Button, ecs_: &mut ECS) {
+///
+pub fn handle_input(press_args: &Button, ecs_: &mut ECS) -> Option<Button> {
    if let Some(player) = ecs_.get_player_entity() {
        if let Some(actor_c) = ecs_.actor_component.get(player) {
            if actor_c.state == ActorState::WaitingForTurn {
                dungeon_actor_controls(press_args, ecs_);
+               return None;
            } else {
                dungeon_passive_controls(press_args, ecs_);
+               return Some(*press_args);
            }
        }
    }
-
+    None
 }
 
 fn menu_controls(button: &Button, ecs_: &mut ECS) {
@@ -32,11 +35,10 @@ fn dungeon_actor_controls(button: &Button, ecs_: &mut ECS) {
     let player_option = ecs_.get_player_entity();
     if player_option.is_none() {
         return;
-    } 
-    let player = player_option.unwrap();
-
+    }
+    
     if let Button::Keyboard(key) = button {
-        let successful = match key {
+        match key {
             Key::Down => {
                 perform_player_action(ecs_, PlayerAction::Move(Direction::Down))
             },
@@ -52,12 +54,8 @@ fn dungeon_actor_controls(button: &Button, ecs_: &mut ECS) {
             Key::Space => {
                 perform_player_action(ecs_, PlayerAction::Attack)
             }
-            _ => {false}
+            _ => {}
         };
-
-        if successful {
-            ecs_.actor_component.get_mut(player).map(|act| act.state = ActorState::DoneActing);
-        }
     }
 }
 

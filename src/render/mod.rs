@@ -92,10 +92,10 @@ pub fn render_game(gl: &mut GlGraphics, args: &RenderArgs, ecs_: &mut ecs::ECS, 
                     let image = Image::new().rect(square(x, y, size));
                     gl.draw(args.viewport(), |c, gl| {
                         let rotation = match location_c.direction {
-                            Direction::Up => {180.0},
-                            Direction::Left => {90.0},
-                            Direction::Down => {0.0},
-                            Direction::Right => {-90.0},
+                            Direction::Up    => 180.0,
+                            Direction::Left  => 90.0,
+                            Direction::Down  => 0.0,
+                            Direction::Right => -90.0,
                         };
                         let new_c = c.trans(x + conf.scale / 2.0, y + conf.scale /2.0)
                                               .rot_deg(rotation)
