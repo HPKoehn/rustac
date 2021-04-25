@@ -158,7 +158,7 @@ pub fn attack(ecs_: &mut ecs::ECS, attacker: ecs::Entity, target: ecs::Entity) -
     }
 
     // attacks vary by 10%  (90% - 110%)
-    let dmg_percentile = rand::thread_rng().gen_range(90.0, 110.0) / 100.0;
+    let dmg_percentile = rand::thread_rng().gen_range(90.0..110.0) / 100.0;
     // apply damage (do at least 1 damage)
     let damage = std::cmp::max(
         1, 

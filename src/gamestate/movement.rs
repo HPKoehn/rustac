@@ -6,7 +6,7 @@ use crate::gamestate::LocationVec;
 use crate::UPDATES_PER_SECOND;
 
 // the default movement speed (fields per second)
-pub const DEFAULT_SPEED: f64 = 2f64;
+pub const DEFAULT_SPEED: f64 = 5f64;
 // number of decimal digits for rounding
 const PRECISION: f64 = 0.0000001;
 

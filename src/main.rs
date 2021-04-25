@@ -56,6 +56,7 @@ fn main() {
         .build()
         .unwrap();
 
+
 	let ref mut gl  = GlGraphics::new(opengl);
     let sprite_textures = sprite::setup_sprite_textures();
 	
@@ -99,7 +100,7 @@ fn main() {
             }
         }
 
-        if let Some(u) = e.update_args() {
+        if let Some(_) = e.update_args() {
             gamelogic::update_entity_positions(&mut ecs_);
         }
 
